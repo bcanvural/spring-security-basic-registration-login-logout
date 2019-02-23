@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/security
+        http://www.springframework.org/schema/security/spring-security.xsd">
+
+  <security:http use-expressions="true" authentication-manager-ref="authenticationManager" auto-config="false">
+
+    <security:intercept-url pattern="/login*" access="isAnonymous()" />
+    <security:intercept-url pattern="/user/registration" access="isAnonymous()" method="GET"/>
+    <security:intercept-url pattern="/user/registration" access="isAnonymous()" method="POST"/>
+    <security:intercept-url pattern="/secured" access="hasRole('ROLE_authenticated')"/>
+    <security:intercept-url pattern="/**" access="isAuthenticated()"/>
+
+    <security:form-login/>
+    <security:logout logout-success-url="/login" />
+    <security:csrf />
+  </security:http>
+
+  <security:authentication-manager id="authenticationManager">
+    <security:authentication-provider user-service-ref="userDetailsService">
+      <security:password-encoder ref="passwordEncoder"/>
+    </security:authentication-provider>
+  </security:authentication-manager>
+
+  <bean id ="passwordEncoder" class = "org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"  />
+
+  <bean id="userDetailsService"
+        class="com.github.bcanvural.basicregistration.MyUserDetailsService"/>
+
+</beans>
